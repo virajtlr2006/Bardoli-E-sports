@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import { OWNER_EMAIL } from "../config.js";
+import { requireAuth } from "../middleware/auth.js";
 import { ownerOnly } from "../middleware/ownerOnly.js";
 import { Event } from "../models/Event.js";
 import { Announcement } from "../models/Announcement.js";
@@ -45,30 +46,80 @@ export function createApiRouter({ jwtSecret } = {}) {
           .json({ message: "email and password are required." });
       }
 
-      if (email !== OWNER_EMAIL) {
-        return res.status(403).json({ message: "Owner login only." });
-      }
-
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(404).json({ message: "Owner account not found." });
+        return res.status(401).json({ message: "Invalid email or password." });
       }
 
       const valid = await bcrypt.compare(password, user.passwordHash);
       if (!valid) {
-        return res.status(401).json({ message: "Invalid password." });
+        return res.status(401).json({ message: "Invalid email or password." });
       }
 
       const token = jwt.sign(
         { email: user.email, name: user.name },
         jwtSecret,
-        { expiresIn: "7d" }
+        { expiresIn: "7d", algorithm: "HS256" }
       );
 
       return res.json({
         name: user.name,
         email: user.email,
         isOwner: user.email === OWNER_EMAIL,
+        token
+      });
+    })
+  );
+
+  router.post(
+    "/auth/signup",
+    asyncHandler(async (req, res) => {
+      const name = (req.body?.name || "").toString().trim();
+      const email = (req.body?.email || "").toString().trim().toLowerCase();
+      const password = (req.body?.password || "").toString();
+
+      if (!name || !email || !password) {
+        return res
+          .status(400)
+          .json({ message: "name, email and password are required." });
+      }
+
+      if (email === OWNER_EMAIL) {
+        return res.status(403).json({ message: "This email is reserved." });
+      }
+
+      if (password.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters." });
+      }
+
+      const existing = await User.findOne({ email });
+      if (existing) {
+        return res.status(409).json({ message: "Account already exists." });
+      }
+
+      const passwordHash = await bcrypt.hash(password, 10);
+      let user;
+      try {
+        user = await User.create({ name, email, passwordHash });
+      } catch (err) {
+        if (err?.code === 11000) {
+          return res.status(409).json({ message: "Account already exists." });
+        }
+        throw err;
+      }
+
+      const token = jwt.sign(
+        { email: user.email, name: user.name },
+        jwtSecret,
+        { expiresIn: "7d", algorithm: "HS256" }
+      );
+
+      return res.status(201).json({
+        name: user.name,
+        email: user.email,
+        isOwner: false,
         token
       });
     })
@@ -107,16 +158,19 @@ export function createApiRouter({ jwtSecret } = {}) {
 
   router.post(
     "/events/:id/register",
+    requireAuth,
     asyncHandler(async (req, res) => {
       const eventId = req.params.id;
       if (!isValidObjectId(eventId)) {
         return res.status(400).json({ message: "Invalid event id." });
       }
 
-      const name = (req.body?.name || "").toString().trim();
-      const email = (req.body?.email || "").toString().trim().toLowerCase();
+      const name = req.user?.name;
+      const email = req.user?.email;
       if (!name || !email) {
-        return res.status(400).json({ message: "name and email are required." });
+        return res
+          .status(401)
+          .json({ message: "Authentication required." });
       }
 
       const event = await Event.findById(eventId);
@@ -139,7 +193,18 @@ export function createApiRouter({ jwtSecret } = {}) {
         eventTitle: event.title,
         rank: "New Player",
         bio: ""
+      }).catch((err) => {
+        if (err?.code === 11000) {
+          return null;
+        }
+        throw err;
       });
+
+      if (!participant) {
+        return res
+          .status(409)
+          .json({ message: "You are already registered for this event." });
+      }
 
       res.status(201).json(participant);
     })

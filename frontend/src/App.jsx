@@ -9,36 +9,12 @@ function navLinkClass({ isActive }) {
 
 function SiteLayout({ children }) {
   return (
-    <div className="app-shell">
-      <header className="site-header">
-        <div className="container header-inner">
-          <NavLink to="/" className="brand">
-            Bardoli E-Sports
-          </NavLink>
-          <nav className="nav">
-            <NavLink to="/" end className={navLinkClass}>
-              Home
-            </NavLink>
-            <NavLink to="/features" className={navLinkClass}>
-              Features
-            </NavLink>
-            <NavLink to="/app" className={navLinkClass}>
-              Portal
-            </NavLink>
-          </nav>
-        </div>
-      </header>
+   
 
-      <main className="container" style={{ paddingTop: 24 }}>
+      <main >
         {children}
       </main>
 
-      <footer className="site-footer">
-        <div className="container footer-inner">
-          <span className="sub">© {new Date().getFullYear()} Bardoli E-Sports</span>
-        </div>
-      </footer>
-    </div>
   );
 }
 
