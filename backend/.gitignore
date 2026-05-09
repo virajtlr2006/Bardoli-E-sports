@@ -1,0 +1,35 @@
+### Node / npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+### Environment files (keep templates like .env.example tracked)
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+### Runtime / logs
+logs/
+*.log
+
+### Coverage
+coverage/
+.nyc_output/
+
+### Build output
+dist/
+build/
+
+### Caches
+.cache/
+.npm/
+.eslintcache
+
+### OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
