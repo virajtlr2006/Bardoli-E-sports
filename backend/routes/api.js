@@ -154,11 +154,11 @@ export function createApiRouter({ jwtSecret } = {}) {
     "/events",
     ownerOnly,
     asyncHandler(async (req, res) => {
-      const { title, game, date, location } = req.body || {};
-      if (!title || !game || !date || !location) {
+      const { title, game, date, location, prize } = req.body || {};
+      if (!title || !game || !date || !location || !prize) {
         return res
           .status(400)
-          .json({ message: "title, game, date and location are required." });
+          .json({ message: "title, game, date, location and prize are required." });
       }
 
       const event = await Event.create({
@@ -166,6 +166,7 @@ export function createApiRouter({ jwtSecret } = {}) {
         game,
         date,
         location,
+        prize,
         createdBy: OWNER_EMAIL
       });
 

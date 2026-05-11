@@ -6,6 +6,7 @@ const eventSchema = new mongoose.Schema(
     game: { type: String, required: true, trim: true },
     date: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
+    prize: { type: String, required: true, trim: true },
     createdBy: { type: String, required: true, trim: true }
   },
   { timestamps: true }

@@ -96,7 +96,7 @@ export default function Portal() {
   const [participants, setParticipants] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
   const [ownerProfile, setOwnerProfile] = useState(null);
-  const [eventForm, setEventForm] = useState({ title: "", game: "Free Fire", date: "", location: "" });
+  const [eventForm, setEventForm] = useState({ title: "", game: "Free Fire", date: "", location: "", prize: "" });
   const [announcementForm, setAnnouncementForm] = useState({ message: "" });
   const [message, setMessage] = useState("");
   const [msgType, setMsgType] = useState("info");
@@ -212,7 +212,7 @@ export default function Portal() {
     e.preventDefault();
     try {
       await apiPost("/events", { ...eventForm }, { token });
-      setEventForm({ title: "", game: "Free Fire", date: "", location: "" });
+      setEventForm({ title: "", game: "Free Fire", date: "", location: "", prize: "" });
       await loadData();
       notify("Event organized successfully.", "success");
     } catch (err) {
@@ -445,6 +445,9 @@ export default function Portal() {
                                 <span>·</span>
                                 <span>{event.location}</span>
                               </div>
+                              <div className="text-emerald-300 text-xs mt-2 font-semibold">
+                                Prize: {event.prize || "To be announced"}
+                              </div>
                             </div>
                           </div>
                           {!isOwner && (
@@ -469,6 +472,7 @@ export default function Portal() {
                         </Select>
                         <Input label="Date" placeholder="2026-06-01" value={eventForm.date} onChange={(e) => setEventForm((p) => ({ ...p, date: e.target.value }))} required />
                         <Input label="Location" placeholder="Bardoli City Arena" value={eventForm.location} onChange={(e) => setEventForm((p) => ({ ...p, location: e.target.value }))} required />
+                        <Input label="Prize Pool" placeholder="e.g. ₹50,000" value={eventForm.prize} onChange={(e) => setEventForm((p) => ({ ...p, prize: e.target.value }))} required />
                         <div className="sm:col-span-2">
                           <PrimaryBtn type="submit">Create Event</PrimaryBtn>
                         </div>
