@@ -163,30 +163,6 @@ export default function Features() {
           </div>
         </section>
 
-        {/* TECH STACK */}
-        <section className="px-6 pb-16 max-w-6xl mx-auto">
-          <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-8">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8">
-              <div className="flex-1">
-                <h2 className="text-2xl font-black text-white mb-2 tracking-tight">Want More Pages?</h2>
-                <p className="text-white/40 text-sm leading-relaxed max-w-lg">
-                  This structure is page-based — we can easily add public pages like About, Contact, and Rules without touching the portal.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {TECH.map((t) => (
-                  <span
-                    key={t}
-                    className="text-xs font-mono text-white/50 bg-white/5 border border-white/8 rounded-lg px-3 py-1.5 hover:bg-white/8 hover:text-white/70 transition-colors cursor-default"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* FOOTER */}
         <footer className="border-t border-white/5 px-6 py-6 flex items-center justify-between max-w-6xl mx-auto">
           <span className="text-xs text-white/20 font-mono">© 2026 Bardoli E-Sports</span>

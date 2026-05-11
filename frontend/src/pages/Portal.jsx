@@ -101,6 +101,22 @@ export default function Portal() {
   const [message, setMessage] = useState("");
   const [msgType, setMsgType] = useState("info");
 
+  // Load authentication data from localStorage on component mount
+  useEffect(() => {
+    const savedUser = localStorage.getItem("bardoli-user");
+    const savedUserName = localStorage.getItem("bardoli-userName");
+    const savedIsOwner = localStorage.getItem("bardoli-isOwner");
+    const savedToken = localStorage.getItem("bardoli-token");
+
+    if (savedUser && savedToken) {
+      // Set authentication state from localStorage
+      setUser(savedUser);
+      setUserName(savedUserName || "");
+      setIsOwner(savedIsOwner === "true");
+      setToken(savedToken);
+    }
+  }, []);
+
   function notify(text, type = "info") {
     setMessage(text);
     setMsgType(type);
@@ -108,19 +124,36 @@ export default function Portal() {
   }
 
   async function loadData() {
-    const [eventList, announcementList, participantList] = await Promise.all([
-      apiGet("/events"),
-      apiGet("/announcements"),
-      apiGet("/participants"),
-    ]);
-    setEvents(eventList);
-    setAnnouncements(announcementList);
-    setParticipants(participantList);
+    try {
+      const [eventList, announcementList, participantList] = await Promise.all([
+        apiGet("/events"),
+        apiGet("/announcements"),
+        apiGet("/participants"),
+      ]);
+      setEvents(eventList);
+      setAnnouncements(announcementList);
+      setParticipants(participantList);
+    } catch (err) {
+      // If authentication fails, clear localStorage and reset state
+      if (err.message.includes("Authentication") || err.message.includes("Invalid") || err.message.includes("expired")) {
+        localStorage.removeItem("bardoli-user");
+        localStorage.removeItem("bardoli-userName");
+        localStorage.removeItem("bardoli-isOwner");
+        localStorage.removeItem("bardoli-token");
+        setUser("");
+        setUserName("");
+        setIsOwner(false);
+        setToken("");
+        notify("Session expired. Please login again.", "error");
+      } else {
+        notify(err.message, "error");
+      }
+    }
   }
 
   useEffect(() => {
     if (!user) return;
-    loadData().catch((err) => notify(err.message, "error"));
+    loadData();
   }, [user]);
 
   async function submitAuth(e) {
@@ -143,6 +176,13 @@ export default function Portal() {
       setSelectedParticipant(null);
       setOwnerProfile(null);
       setPasswordInput("");
+      
+      // Save authentication data to localStorage
+      localStorage.setItem("bardoli-user", data.email);
+      localStorage.setItem("bardoli-userName", data.name);
+      localStorage.setItem("bardoli-isOwner", data.isOwner.toString());
+      localStorage.setItem("bardoli-token", data.token || "");
+      
       notify(
         authMode === "signup"
           ? "Account created. Welcome to the arena."
@@ -158,6 +198,13 @@ export default function Portal() {
     setUser(""); setUserName(""); setIsOwner(false); setToken("");
     setEvents([]); setAnnouncements([]); setParticipants([]);
     setSelectedParticipant(null); setOwnerProfile(null);
+    
+    // Clear authentication data from localStorage
+    localStorage.removeItem("bardoli-user");
+    localStorage.removeItem("bardoli-userName");
+    localStorage.removeItem("bardoli-isOwner");
+    localStorage.removeItem("bardoli-token");
+    
     notify("Logged out.", "info");
   }
 
@@ -168,7 +215,14 @@ export default function Portal() {
       setEventForm({ title: "", game: "Free Fire", date: "", location: "" });
       await loadData();
       notify("Event organized successfully.", "success");
-    } catch (err) { notify(err?.message || "Failed to create event.", "error"); }
+    } catch (err) {
+      if (err.message.includes("Authentication") || err.message.includes("Invalid") || err.message.includes("expired")) {
+        logout();
+        notify("Session expired. Please login again.", "error");
+      } else {
+        notify(err?.message || "Failed to create event.", "error");
+      }
+    }
   }
 
   async function createAnnouncement(e) {
@@ -178,7 +232,14 @@ export default function Portal() {
       setAnnouncementForm({ message: "" });
       await loadData();
       notify("Announcement posted.", "success");
-    } catch (err) { notify(err?.message || "Failed to post announcement.", "error"); }
+    } catch (err) {
+      if (err.message.includes("Authentication") || err.message.includes("Invalid") || err.message.includes("expired")) {
+        logout();
+        notify("Session expired. Please login again.", "error");
+      } else {
+        notify(err?.message || "Failed to post announcement.", "error");
+      }
+    }
   }
 
   async function registerForEvent(eventId) {
@@ -186,7 +247,14 @@ export default function Portal() {
       await apiPost(`/events/${eventId}/register`, {}, { token });
       await loadData();
       notify("Registered successfully.", "success");
-    } catch (err) { notify(err?.message || "Registration failed.", "error"); }
+    } catch (err) {
+      if (err.message.includes("Authentication") || err.message.includes("Invalid") || err.message.includes("expired")) {
+        logout();
+        notify("Session expired. Please login again.", "error");
+      } else {
+        notify(err?.message || "Registration failed.", "error");
+      }
+    }
   }
 
   async function showParticipantDetails(id) {
@@ -200,7 +268,14 @@ export default function Portal() {
     try {
       const profile = await apiGet("/owner-profile", { token });
       setOwnerProfile(profile);
-    } catch (err) { notify(err?.message || "Failed to load profile.", "error"); }
+    } catch (err) {
+      if (err.message.includes("Authentication") || err.message.includes("Invalid") || err.message.includes("expired")) {
+        logout();
+        notify("Session expired. Please login again.", "error");
+      } else {
+        notify(err?.message || "Failed to load profile.", "error");
+      }
+    }
   }
 
   const msgStyles = {
