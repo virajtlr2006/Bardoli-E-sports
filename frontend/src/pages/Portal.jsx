@@ -8,10 +8,10 @@ function TabBtn({ active, onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-all duration-200 rounded-lg border ${
+      className={`px-4 py-2.5 text-xs font-semibold tracking-[0.6px] uppercase transition-colors rounded-md border ${
         active
-          ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-400"
-          : "border-transparent text-white/30 hover:text-white/60 hover:bg-white/5"
+          ? "bg-[#1a1f29] border-[color:var(--hairline)] text-white"
+          : "border-transparent text-[color:var(--ink-subtle)] hover:text-[color:var(--ink)] hover:bg-[#12151c]"
       }`}
     >
       {children}
@@ -21,13 +21,13 @@ function TabBtn({ active, onClick, children }) {
 
 function Badge({ children, color = "cyan" }) {
   const colors = {
-    cyan: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
-    violet: "text-violet-400 bg-violet-500/10 border-violet-500/20",
-    green: "text-green-400 bg-green-500/10 border-green-500/20",
-    orange: "text-orange-400 bg-orange-500/10 border-orange-500/20",
+    cyan: "accent-waypoint",
+    violet: "accent-terraform",
+    green: "accent-vault",
+    orange: "accent-vault",
   };
   return (
-    <span className={`text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border ${colors[color]}`}>
+    <span className={`text-[10px] font-semibold tracking-[0.6px] uppercase px-2 py-0.5 rounded-md ${colors[color]}`}>
       {children}
     </span>
   );
@@ -38,7 +38,7 @@ function Input({ label, ...props }) {
     <div className="flex flex-col gap-1.5">
       {label && <label className="text-xs text-white/40 uppercase tracking-wider font-semibold">{label}</label>}
       <input
-        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/40 focus:bg-white/8 transition-all"
+        className="panel-input placeholder:text-[color:var(--ink-subtle)]"
         {...props}
       />
     </div>
@@ -50,7 +50,7 @@ function Select({ label, children, ...props }) {
     <div className="flex flex-col gap-1.5">
       {label && <label className="text-xs text-white/40 uppercase tracking-wider font-semibold">{label}</label>}
       <select
-        className="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500/40 transition-all"
+        className="panel-select"
         {...props}
       >
         {children}
@@ -62,7 +62,7 @@ function Select({ label, children, ...props }) {
 function PrimaryBtn({ children, className = "", ...props }) {
   return (
     <button
-      className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-[#080B10] font-black text-xs tracking-wide uppercase shadow-lg shadow-cyan-500/20 transition-all disabled:opacity-40 ${className}`}
+      className={`btn-primary text-xs uppercase tracking-[0.6px] disabled:opacity-40 ${className}`}
       {...props}
     >
       {children}
@@ -73,7 +73,7 @@ function PrimaryBtn({ children, className = "", ...props }) {
 function SecondaryBtn({ children, className = "", ...props }) {
   return (
     <button
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 text-white/60 hover:bg-white/5 hover:text-white/90 transition-all text-xs font-semibold tracking-wide uppercase ${className}`}
+      className={`btn-secondary text-xs uppercase tracking-[0.6px] ${className}`}
       {...props}
     >
       {children}
@@ -279,35 +279,29 @@ export default function Portal() {
   }
 
   const msgStyles = {
-    success: "bg-green-500/10 border-green-500/30 text-green-400",
-    error: "bg-red-500/10 border-red-500/30 text-red-400",
-    info: "bg-cyan-500/10 border-cyan-500/30 text-cyan-300",
+    success: "bg-[#12151c] border-[color:var(--hairline)] text-[color:var(--success)]",
+    error: "bg-[#12151c] border-[color:var(--hairline)] text-[color:var(--danger)]",
+    info: "bg-[#12151c] border-[color:var(--hairline)] text-[color:var(--ink-muted)]",
   };
 
   const GAME_COLORS = { "Free Fire": "bg-orange-500", PUBG: "bg-blue-500", "Call of Duty": "bg-green-500" };
 
   return (
-    <div className="min-h-screen bg-[#080B10] text-white font-sans">
-      {/* Ambient */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-cyan-500/4 rounded-full blur-3xl pointer-events-none z-0" />
-
-      <div className="relative z-10">
-        {/* NAV */}
-        <nav className="flex items-center justify-between px-6 py-4 border-b border-white/5 backdrop-blur-sm sticky top-0 bg-[#080B10]/80 z-50">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
+    <div className="site-shell">
+      <nav className="site-nav">
+        <div className="site-nav-inner">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="brand-mark">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <span className="font-bold text-sm tracking-widest uppercase text-white/90">
-              Bardoli <span className="text-cyan-400">E-Sports</span>
-            </span>
+            <span className="brand-title">Bardoli E-Sports</span>
           </Link>
           {user && (
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2">
-                <span className="text-xs text-white/30 font-mono">{userName}</span>
+                <span className="text-xs text-[color:var(--ink-subtle)]">{userName}</span>
                 <Badge color={isOwner ? "violet" : "cyan"}>{isOwner ? "Owner" : "Player"}</Badge>
               </div>
               <SecondaryBtn onClick={logout}>
@@ -318,19 +312,17 @@ export default function Portal() {
               </SecondaryBtn>
             </div>
           )}
-        </nav>
+        </div>
+      </nav>
 
-        <div className="max-w-4xl mx-auto px-4 py-10">
+      <div className="max-w-4xl mx-auto px-4 py-10">
           {/* HEADER */}
           <div className="mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/5 mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              <span className="text-xs text-cyan-400 tracking-widest uppercase font-medium">Portal</span>
-            </div>
-            <h1 className="text-4xl font-black tracking-tight text-white">
+            <span className="eyebrow mb-4">Portal</span>
+            <h1 className="section-title">
               {user ? `Welcome back, ${userName}` : "Enter the Arena"}
             </h1>
-            <p className="text-white/40 mt-2 text-sm">
+            <p className="body-copy mt-2">
               {user ? "Manage events, registrations, and announcements." : "Login to access events, announcements, and participants."}
             </p>
           </div>
@@ -344,15 +336,15 @@ export default function Portal() {
 
           {/* LOGIN */}
           {!user ? (
-            <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-8 max-w-md">
+            <div className="surface-card p-8 max-w-md">
               <div className="flex items-center justify-between gap-3 mb-4">
-                <h2 className="text-xl font-black text-white">{authMode === "signup" ? "Player Sign Up" : "Login"}</h2>
-                <div className="flex gap-1 p-1 rounded-xl border border-white/10 bg-white/[0.02]">
+                <h2 className="text-xl font-semibold">{authMode === "signup" ? "Player Sign Up" : "Login"}</h2>
+                <div className="flex gap-1 p-1 rounded-md border border-[color:var(--hairline)] bg-[#12151c]">
                   <button
                     type="button"
                     onClick={() => setAuthMode("login")}
-                    className={`px-3 py-1.5 text-[10px] font-black tracking-widest uppercase rounded-lg transition-all ${
-                      authMode === "login" ? "bg-cyan-500/10 text-cyan-300" : "text-white/30 hover:text-white/60"
+                    className={`px-3 py-1.5 text-[10px] font-semibold tracking-[0.6px] uppercase rounded-md transition-colors ${
+                      authMode === "login" ? "bg-[#1a1f29] text-white" : "text-[color:var(--ink-subtle)] hover:text-[color:var(--ink)]"
                     }`}
                   >
                     Login
@@ -360,15 +352,15 @@ export default function Portal() {
                   <button
                     type="button"
                     onClick={() => setAuthMode("signup")}
-                    className={`px-3 py-1.5 text-[10px] font-black tracking-widest uppercase rounded-lg transition-all ${
-                      authMode === "signup" ? "bg-cyan-500/10 text-cyan-300" : "text-white/30 hover:text-white/60"
+                    className={`px-3 py-1.5 text-[10px] font-semibold tracking-[0.6px] uppercase rounded-md transition-colors ${
+                      authMode === "signup" ? "bg-[#1a1f29] text-white" : "text-[color:var(--ink-subtle)] hover:text-[color:var(--ink)]"
                     }`}
                   >
                     Sign Up
                   </button>
                 </div>
               </div>
-              <p className="text-white/30 text-xs mb-6 tracking-wide">
+              <p className="text-[color:var(--ink-subtle)] text-xs mb-6 tracking-[0.2px]">
                 {authMode === "signup"
                   ? "Create a player account to register for events."
                   : "Login as owner or player to access the portal."}
@@ -411,7 +403,7 @@ export default function Portal() {
           ) : (
             <>
               {/* TABS */}
-              <div className="flex flex-wrap gap-2 mb-8 p-1 rounded-2xl border border-white/5 bg-white/[0.01] w-fit">
+              <div className="flex flex-wrap gap-2 mb-8 p-1 rounded-md border border-[color:var(--hairline)] bg-[#12151c] w-fit">
                 {TABS.map((t) => (
                   <TabBtn key={t} active={tab === t} onClick={() => setTab(t)}>
                     {t}
@@ -428,7 +420,7 @@ export default function Portal() {
               {tab === "events" && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-xl font-black text-white tracking-tight">Gaming Events</h2>
+                    <h2 className="text-xl font-semibold">Gaming Events</h2>
                     <Badge color="cyan">{events.length} Events</Badge>
                   </div>
 
@@ -440,7 +432,7 @@ export default function Portal() {
 
                   <div className="space-y-3">
                     {events.map((event) => (
-                      <div key={event._id} className="group rounded-2xl border border-white/8 bg-white/[0.02] p-5 hover:bg-white/[0.04] hover:border-white/12 transition-all">
+                      <div key={event._id} className="surface-card surface-card-hover p-5 transition-colors">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-start gap-3 flex-1 min-w-0">
                             <div className={`mt-1 w-2.5 h-2.5 rounded-full flex-shrink-0 ${GAME_COLORS[event.game] || "bg-gray-500"}`} />
@@ -467,7 +459,7 @@ export default function Portal() {
 
                   {isOwner && (
                     <div className="mt-6 rounded-2xl border border-dashed border-violet-500/20 bg-violet-500/[0.03] p-6">
-                      <h3 className="text-sm font-black text-white/70 uppercase tracking-widest mb-4">Organize New Event</h3>
+                      <h3 className="text-sm font-semibold text-[color:var(--ink-muted)] uppercase tracking-[0.6px] mb-4">Organize New Event</h3>
                       <form onSubmit={createEvent} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Input label="Event Title" placeholder="e.g. City Showdown S2" value={eventForm.title} onChange={(e) => setEventForm((p) => ({ ...p, title: e.target.value }))} required />
                         <Select label="Game" value={eventForm.game} onChange={(e) => setEventForm((p) => ({ ...p, game: e.target.value }))}>
@@ -490,7 +482,7 @@ export default function Portal() {
               {tab === "announcements" && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-xl font-black text-white tracking-tight">Announcements</h2>
+                    <h2 className="text-xl font-semibold">Announcements</h2>
                     <Badge color="violet">{announcements.length} Posts</Badge>
                   </div>
 
@@ -502,7 +494,7 @@ export default function Portal() {
 
                   <div className="space-y-3">
                     {announcements.map((a, i) => (
-                      <div key={a._id} className="rounded-2xl border border-white/8 bg-white/[0.02] p-5 hover:bg-white/[0.04] transition-all">
+                      <div key={a._id} className="surface-card surface-card-hover p-5 transition-colors">
                         <div className="flex items-start gap-3">
                           <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center flex-shrink-0">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth={2}>
@@ -520,7 +512,7 @@ export default function Portal() {
 
                   {isOwner && (
                     <div className="mt-6 rounded-2xl border border-dashed border-violet-500/20 bg-violet-500/[0.03] p-6">
-                      <h3 className="text-sm font-black text-white/70 uppercase tracking-widest mb-4">Post Announcement</h3>
+                      <h3 className="text-sm font-semibold text-[color:var(--ink-muted)] uppercase tracking-[0.6px] mb-4">Post Announcement</h3>
                       <form onSubmit={createAnnouncement} className="flex flex-col gap-4">
                         <textarea
                           placeholder="Write your announcement..."
@@ -528,7 +520,7 @@ export default function Portal() {
                           onChange={(e) => setAnnouncementForm({ message: e.target.value })}
                           required
                           rows={4}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/40 resize-none transition-all"
+                          className="panel-textarea resize-none placeholder:text-[color:var(--ink-subtle)]"
                         />
                         <PrimaryBtn type="submit" className="self-start">Post</PrimaryBtn>
                       </form>
@@ -541,7 +533,7 @@ export default function Portal() {
               {tab === "participants" && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-xl font-black text-white tracking-tight">Participant Directory</h2>
+                    <h2 className="text-xl font-semibold">Participant Directory</h2>
                     <Badge color="green">{participants.length} Players</Badge>
                   </div>
 
@@ -553,7 +545,7 @@ export default function Portal() {
 
                   <div className="space-y-2">
                     {participants.map((p) => (
-                      <div key={p._id} className="rounded-2xl border border-white/8 bg-white/[0.02] p-4 hover:bg-white/[0.04] hover:border-white/12 transition-all">
+                      <div key={p._id} className="surface-card surface-card-hover p-4 transition-colors">
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex items-center gap-3 min-w-0">
                             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-white/8 flex items-center justify-center text-xs font-black text-cyan-400 flex-shrink-0">
@@ -613,7 +605,7 @@ export default function Portal() {
               {/* OWNER PROFILE TAB */}
               {tab === "owner" && isOwner && (
                 <div className="space-y-4">
-                  <h2 className="text-xl font-black text-white tracking-tight mb-6">Owner Profile</h2>
+                  <h2 className="text-xl font-semibold mb-6">Owner Profile</h2>
                   <SecondaryBtn onClick={loadOwnerProfile}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                       <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" />
@@ -622,7 +614,7 @@ export default function Portal() {
                   </SecondaryBtn>
 
                   {ownerProfile && (
-                    <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-6">
+                    <div className="surface-card p-6">
                       <div className="flex items-center gap-4 mb-6">
                         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center text-xl font-black text-white">
                           {ownerProfile.name?.charAt(0) || "O"}
@@ -648,12 +640,12 @@ export default function Portal() {
           )}
         </div>
 
-        {/* FOOTER */}
-        <footer className="border-t border-white/5 px-6 py-6 flex items-center justify-between max-w-4xl mx-auto">
-          <span className="text-xs text-white/20 font-mono">© 2026 Bardoli E-Sports</span>
-          <span className="text-xs text-white/20">All rights reserved</span>
-        </footer>
-      </div>
+      <footer className="site-footer">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+          <span>© 2026 Bardoli E-Sports</span>
+          <span>All rights reserved</span>
+        </div>
+      </footer>
     </div>
   );
 }
